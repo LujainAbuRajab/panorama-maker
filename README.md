@@ -45,4 +45,26 @@ This project is focused on developing a web application that allows users to upl
    
    ```bash
    pip install -r requirements.txt
+   
+   Run the Flask server:
+   
+   ```bash
+   python app.py
 
+3. **Frontend Setup**:
+
+   Navigate to the frontend directory and install the dependencies:
+   
+   ```bash
+   npm install
+
+   Run the React app:
+   
+   ```bash
+   npm start
+
+4. **Access the Web Application:**
+
+   Open your browser and go to ```http://localhost:3000``` to start using the application.
+
+   
