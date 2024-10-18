@@ -2,7 +2,7 @@
 
 ## Project Idea
 
-This project is focused on developing a web application that allows users to upload multiple images, stitch them together into a panoramic image, and apply various edge detection techniques to the stitched image. The techniques include Canny Edge Detection, Difference of Gaussians (DoG) with a morphological operation, and an AI-based edge detection model specifically tuned to recognize human figures with a confidence level above 50%. The application offers an interactive user interface to adjust parameters and visually compare the results of different edge detection techniques.
+This project is focused on developing a web application that allows users to upload multiple images, stitch them together into a panoramic image, and apply various edge detection techniques to the stitched image. The techniques include Canny Edge Detection, and Difference of Gaussians (DoG) with a morphological operation. The application offers an interactive user interface to adjust parameters and visually compare the results of different edge detection techniques.
 
 ## Techniques Used
 
