@@ -56,14 +56,14 @@ Run the Flask server:
    Navigate to the frontend directory and install the dependencies:
    
    ```bash
-   npm install
+   npm install```
 
-Run the React app:
+   Run the React app:
    
    ```bash
-   npm start
+   npm start```
 
-4. **Access the Web Application:**
+4. **Access the Web Application**:
 
    Open your browser and go to ```http://localhost:3000``` to start using the application.
 
