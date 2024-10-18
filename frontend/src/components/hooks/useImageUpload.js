@@ -11,7 +11,7 @@ import {
   CardMedia,
 } from "@mui/material";
 
-function ImageUploader() {
+function ImagesUploader() {
   const [images, setImages] = useState([]);
   const [uploadStatus, setUploadStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -111,4 +111,4 @@ function ImageUploader() {
   );
 }
 
-export default ImageUploader;
+export default ImagesUploader;

@@ -1,41 +1,3 @@
-# from flask import Flask, request, jsonify
-# from flask_cors import CORS
-# import cv2
-# import numpy as np
-# import os
-
-# app = Flask(__name__)
-# CORS(app)  # Allow cross-origin requests
-
-# # Directory where uploaded images will be saved
-# UPLOAD_FOLDER = 'uploads'
-# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-# # Ensure the upload folder exists
-# if not os.path.exists(UPLOAD_FOLDER):
-#     os.makedirs(UPLOAD_FOLDER)
-
-# @app.route('/upload', methods=['GET','POST'])
-# def upload_image():
-    
-#     if 'file' not in request.files:
-#         return jsonify({'error': 'No file part in the request'}), 400
-
-#     file = request.files['file']
-
-#     if file.filename == '':
-#         return jsonify({'error': 'No selected file'}), 400
-
-#     if file:
-#         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-#         file.save(file_path)
-#         return jsonify({'message': 'File uploaded successfully', 'file_path': file_path}), 200
-
-#     return jsonify({'error': 'File upload failed'}), 500
-
-# if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port=5000, debug=True)
-
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
@@ -60,59 +22,67 @@ uploaded_images = []
 
 @app.route('/upload', methods=['POST'])
 def upload_images():
-    # Check if 'file' is part of the request
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file part in the request'}), 400
+    try:
+        # Check if 'file' is part of the request
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file part in the request'}), 400
 
-    files = request.files.getlist('file')  # Get the list of files
-    if not files or len(files) == 0:
-        return jsonify({'error': 'No files selected'}), 400
+        files = request.files.getlist('file')  # Get the list of files
+        if not files or len(files) == 0:
+            return jsonify({'error': 'No files selected'}), 400
 
-    uploaded_file_paths = []  # List to store the paths of uploaded files
+        uploaded_file_paths = []  # List to store the paths of uploaded files
 
-    for file in files:
-        if file.filename == '':
-            return jsonify({'error': 'One of the selected files has no filename'}), 400
+        # Save each file and log any potential errors
+        for file in files:
+            if file.filename == '':
+                return jsonify({'error': 'One of the selected files has no filename'}), 400
 
-        if file:
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-            file.save(file_path)
+            file.save(file_path)  # Save the file
             uploaded_file_paths.append(file_path)
             uploaded_images.append(file_path)
 
-    return jsonify({
-        'message': 'Files uploaded successfully',
-        'file_paths': uploaded_file_paths,
-        'uploaded_images': uploaded_images
-    }), 200
+        # After uploading, create a panorama
+        try:
+            panorama_path = create_panorama(uploaded_file_paths)
+        except Exception as e:
+            # Catch and log any panorama creation errors
+            return jsonify({'error': 'Error creating panorama: ' + str(e)}), 500
 
-@app.route('/convert', methods=['POST'])
-def convert_to_panorama():
-    if not uploaded_images:
-        return jsonify({'error': 'No images uploaded to create a panorama.'}), 400
-
-    try:
-        panorama_path = create_panorama(uploaded_images)
         return jsonify({
-            'message': 'Panorama created successfully',
+            'message': 'Files uploaded successfully',
+            'uploaded_images': uploaded_file_paths,
             'panorama_image': os.path.basename(panorama_path)  # Return the filename
         }), 200
+
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        # Catch any general errors
+        return jsonify({'error': 'An error occurred: ' + str(e)}), 500
 
 def create_panorama(image_paths):
-    images = [cv2.imread(img) for img in image_paths]
+    try:
+        # Read images for stitching
+        images = [cv2.imread(img) for img in image_paths]
 
-    # Create a Stitcher object (OpenCV 4.x)
-    stitcher = cv2.Stitcher_create()
-    (status, stitched) = stitcher.stitch(images)
+        # Check if images were successfully loaded
+        if any(img is None for img in images):
+            raise ValueError("One or more images could not be read. Ensure valid image files.")
 
-    if status != 0:
-        raise Exception("Image stitching failed.")
+        stitcher = cv2.Stitcher_create()
+        (status, stitched) = stitcher.stitch(images)
 
-    panorama_path = os.path.join(app.config['PANORAMA_FOLDER'], 'panorama.jpg')
-    cv2.imwrite(panorama_path, stitched)  # Save the panorama image
-    return panorama_path  # Return the path of the panorama
+        # Handle stitching errors
+        if status != 0:
+            raise Exception(f"Image stitching failed with status {status}.")
+
+        panorama_path = os.path.join(app.config['PANORAMA_FOLDER'], 'panorama.jpg')
+        cv2.imwrite(panorama_path, stitched)  
+        return panorama_path  
+
+    except Exception as e:
+        # Log any errors in the stitching process
+        raise Exception(f"Panorama creation error: {str(e)}")
 
 # Serve the stitched panorama image
 @app.route('/panorama/<filename>')
