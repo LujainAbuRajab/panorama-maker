@@ -38,12 +38,4 @@ This project is focused on developing a web application that allows users to upl
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/your-repo/ai-image-stitching-edge-detection.git
-
-   ```bach
-   python app.py
-
-   ```bach
-   npm install
-
-   ```bach
-   npm start
+   
