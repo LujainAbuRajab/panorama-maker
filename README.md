@@ -46,7 +46,7 @@ This project is focused on developing a web application that allows users to upl
    ```bash
    pip install -r requirements.txt
    
-   Run the Flask server:
+Run the Flask server:
    
    ```bash
    python app.py
@@ -58,7 +58,7 @@ This project is focused on developing a web application that allows users to upl
    ```bash
    npm install
 
-   Run the React app:
+Run the React app:
    
    ```bash
    npm start
